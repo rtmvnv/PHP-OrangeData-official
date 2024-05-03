@@ -5,8 +5,8 @@ include_once '../orangedata_client.php'; // path to orangedata_client.php
 try {
   $client = [
     'inn' => '7725327863',
-//    'api_url' => '2443',
-     'api_url' => 'https://apip.orangedata.ru:2443', // link access
+    'api_url' => '2443',
+    // 'api_url' => 'https://apip.orangedata.ru:2443', // link access
     'sign_pkey' => dirname(__DIR__) . '/secure_path/private_key.pem',
     'ssl_client_key' => dirname(__DIR__) . '/secure_path/client.key',
     'ssl_client_crt' => dirname(__DIR__) . '/secure_path/client.crt',
@@ -18,82 +18,92 @@ try {
 
   // $buyer->is_debug(); // for write curl.log file
 
+  $correctionId = '1285';
+
   $correction = [
-      'ffdVersion' => 4, //required for FFD1.2
-      'id' => '23423423',
-      'inn' => '7725327863',
-      'key' => '1234567',
-      'correctionType' => 0,
-      'type' => 1,
-      'group' => 'main_2',
-      'causeDocumentDate' => new \DateTime(),
-      'causeDocumentNumber' => '56',
-      'totalSum' => 1,
-      'customerContact' => 'liza@ya.ru',
-      'vat1Sum' => 0,
-      'vat2Sum' => 0,
-      'vat3Sum' => 0,
-      'vat4Sum' => 0,
-      'vat5Sum' => 0,
-      'vat6Sum' => 0,
+      'id' => $correctionId,
+      "group" => "main_2",
+      "key" => "999",
+      "ffdVersion" => 4,
+      "ignoreItemCodeCheck" => true,
+      "type" => 1,
+      "correctionType" => 0,
+      "causeDocumentDate" => new \DateTime(),
+      "causeDocumentNumber" => "12312",
+      "taxationSystem" => 0,
+      "customerContact" => 'example@example.com'
   ];
 
-  $correctionPos = [
-      "quantity" => 1.000,
-      "price" => 1,
-      "tax" => 6,
-      "text" => "Булка",
-      "excise" => 23.45,
-      "paymentMethodType" => 4, "paymentSubjectType" => 1,
-      "agentType" => 127,
-      "agentInfo" => ["paymentTransferOperatorPhoneNumbers" => ["+79200000001", "+74997870001"], "paymentAgentOperation" => "Какая-то операция 1", "paymentAgentPhoneNumbers" => ["+79200000003"], "paymentOperatorPhoneNumbers" => ["+79200000002", "+74997870002"], "paymentOperatorName" => "ООО \"Атлант\"", "paymentOperatorAddress" => "Воронеж, ул. Недогонная, д. 84", "paymentOperatorINN" => "7727257386"]
+  $correctionPosition1 = [
+    "tax" => 1,
+    "paymentMethodType" => 1,
+    "paymentSubjectType" => 1,
+    "quantity" => 1,
+    "quantityMeasurementUnit" => 0,
+    "text" => "вввввв",
+    "price" => "1000"
   ];
 
-  $correctionPayment =
-      [
-          'type' => 1,
-          'amount' => 1,
-      ];
-
-  $correctionVending = [
-      'automatNumber' => '21321321123',
-      'settlementAddress' => 'Address',
-      'settlementPlace' => 'Place',
+  $correctionPayment1 = [
+    "type" => 2,
+    "amount" => 1000
   ];
 
-  $additional = [
-      'additionalAttribute' => 'Attribute',
-      "customerInfo" =>[
-            "name"=> "Кузнецов Иван Петрович",
-            "inn"=> "7725327863",
-            "birthDate"=> "15.09.1988",
-            "citizenship"=> "643",
-            "identityDocumentCode"=> "01",
-            "identityDocumentData"=> "multipassport",
-            "address"=> "Басеенная 36"
-        ],
+  $userAttribute = [
+    "value" => "2132",
+    "name" => "21212"
+  ];
+
+  $correctionAdditional = [
+    "additionalAttribute" => "ыыа",
+    "senderEmail" => "example@example.com",
+    "vat1Sum" => 1,
+    "vat2Sum" => 2,
+    "vat3Sum" => 3,
+    "vat4Sum" => 4,
+    "vat5Sum" => 5,
+    "vat6Sum" => 6,
+    "customerInfo" => [
+        "address" => "ввввввввв",
+        "citizenship" => 48,
+        "identityDocumentData" => "1236 1231231",
+        "identityDocumentCode" => 21,
+        "inn" => "7727401209",
+        "name" => "яяяяяяяяяяя",
+        "birthDate" => "11.04.2024"
+    ],
+    "operationalAttribute" => [
+        "value" => "9999",
+        "date" => new \DateTime(),
+        "id" => null
+    ],
+    "industryAttribute" => [
+        "foivId" => "012",
+        "causeDocumentDate" => "03.04.2024",
+        "causeDocumentNumber" => "666",
+        "value" => "11111111"
+    ]
   ];
 
   $buyer->create_correction12($correction) // Create correction
-      ->add_position_to_correction($correctionPos)
-      ->add_payment_to_correction($correctionPayment)
-      ->add_additional_attributes_to_correction($additional)
-//      ->add_vending_to_correction($correctionVending)
-  ;
+    ->add_position_to_correction12($correctionPosition1)
+    ->add_payment_to_correction12($correctionPayment1)
+    ->add_user_attribute_to_correction12($userAttribute)
+    ->add_additional_attributes_to_correction12($correctionAdditional)
+;
 
 
-  $result = $buyer->post_correction12(); // Send correction
-  var_dump($result); // View response
+$result = $buyer->post_correction12(); // Send correction
+var_dump($result); // View response
 } catch (Exception $ex) {
-  echo 'Errors:' . PHP_EOL . $ex->getMessage();
+echo 'Errors:' . PHP_EOL . $ex->getMessage();
 }
 
 /** View status of correction **/
 try {
-  $cor_status = $buyer->get_correction_status12('23423423');
-  var_dump($cor_status);
+$cor_status = $buyer->get_correction_status12($correctionId);
+var_dump($cor_status);
 } catch (Exception $ex) {
-  echo 'Ошибка:' . PHP_EOL . $ex->getMessage();
+echo 'Ошибка:' . PHP_EOL . $ex->getMessage();
 }
 
-?>

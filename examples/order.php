@@ -18,87 +18,88 @@ try {
 
   // $buyer->is_debug(); // for write curl.log file
 
+  $orderId = '1280';
+
   $order = [
-    'id' => '23423423434',
-    'type' => 1,
-    'customerContact' => 'example@example.com',
-    'taxationSystem' => 1,
-    'key' => '1234567',
+    'id' => $orderId,
+    'customerContact' => 'test@aqsi.ru',
+    'key' => '999',
+    'ignoreItemCodeCheck' => false,
+    "type" => 1,
+    "ffdVersion" => 2,
+    'group' => 'main',
+    "taxationSystem" => 0,
   ];
 
-  $position = [
-    'quantity' => '10',
-    'price' => 100,
-    'tax' => 1,
-    'text' => 'some text',
-    'paymentMethodType' => 3,
-    'paymentSubjectType' => 1,
-    'nomenclatureCode' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
-    'supplierInfo' => [
-      'phoneNumbers' => ['+79266660011', '+79293456723'],
-      'name' => 'PAO Example',
+  $position1 = [
+    "quantity" => 1,
+    "price" => "100",
+    "tax" => 1,
+    "text" => "Товар 1",
+    "paymentMethodType" => 1,
+    "paymentSubjectType" => 1
+  ];
+
+  $position2 = [
+    "quantity" => 1,
+    "price" => "200",
+    "tax" => 6,
+    "text" => "Товар 2",
+    "paymentMethodType" => 4,
+    "paymentSubjectType" => 1
+  ];
+
+  $position3 = [
+    "quantity" => 1,
+    "price" => "300",
+    "tax" => 6,
+    "text" => "Товар 3",
+    "paymentMethodType" => 3,
+    "paymentSubjectType" => 1,
+    "supplierINN" => "7727401209",
+    "supplierInfo" => [
+        "name" => "ооо поставщик"
     ],
-    'supplierINN' => 1234567890,
-    'agentType' => 127,
-    'agentInfo' => [
-      'paymentTransferOperatorPhoneNumbers' => ['+79266660011', '+79293456723'],
-      'paymentAgentOperation' => 'some operartion',
-      'paymentAgentPhoneNumbers' => ['+79266660011', '+79293456723'],
-      'paymentOperatorPhoneNumbers' => ['+79266660011'],
-      'paymentOperatorName' => 'OAO ATLANT',
-      'paymentOperatorAddress' => 'Address',
-      'paymentOperatorInn' => 1234567890,
-    ],
-    'unitOfMeasurement' => 'kg',
-    'additionalAttribute' => 'attribute',
-    'manufacturerCountryCode' => '534',
-    'customsDeclarationNumber' => 'AD 11/77 from 01.08.2018',
-    'excise' => '12.43',
+    "agentType" => 32
   ];
 
   $payment = [
-    'type' => 16,
-    'amount' => 131.23,
+    "type" => 2,
+    "amount" => 600
   ];
 
   $agent = [
-    'agentType' => 127,
-    'paymentTransferOperatorPhoneNumbers' => ['+79998887766', '+76667778899'],
-    'paymentAgentOperation' => 'Operation',
-    'paymentAgentPhoneNumbers' => ['+79998887766'],
-    'paymentOperatorPhoneNumbers' => ['+79998887766'],
-    'paymentOperatorName' => 'Name',
-    'paymentOperatorAddress' => 'ulitsa Adress, dom 7',
-    'paymentOperatorINN' => '3123011520',
-    'supplierPhoneNumbers' => ['+79998887766', '+76667778899'],
+    "agentType" => 64
   ];
 
   $userAttribute = [
-    'name' => 'Like',
-    'value' => 'Example',
+    "name" => "Номер заказа",
+    "value" => "1"
   ];
 
   $additional = [
-    'additionalAttribute' => 'Attribute',
-    'customer' => 'Ivanov Ivan',
-    'customerINN' => '0987654321',
+    "customer" => "Иван",
+    "customerINN" => "7727401209",
+    "additionalAttribute" => "2"
   ];
 
-  $vending = [
+/*   $vending = [
     'automatNumber' => '21321321123',
     'settlementAddress' => 'Address',
     'settlementPlace' => 'Place',
-  ];
+  ]; */
 
   /** Create client new order **/
   $buyer->create_order($order)
-        ->add_position_to_order($position)
+        ->add_position_to_order($position1)
+        ->add_position_to_order($position2)
+        ->add_position_to_order($position3)
         ->add_payment_to_order($payment)
         ->add_agent_to_order($agent)
         ->add_user_attribute($userAttribute)
         ->add_additional_attributes($additional)
-        ->add_vending_to_order($vending);
-
+/*         ->add_vending_to_order($vending) */
+  ;
   $result = $buyer->send_order(); // Send order
   var_dump($result); // View response
 } catch (Exception $ex) {
@@ -107,7 +108,7 @@ try {
 
 /** View status of order **/
 try {
-  $order_status = $buyer->get_order_status(23423423434);
+  $order_status = $buyer->get_order_status($orderId);
   var_dump($order_status);
 } catch (Exception $ex) {
   echo 'Ошибка:' . PHP_EOL . $ex->getMessage();
