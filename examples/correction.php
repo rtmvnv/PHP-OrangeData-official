@@ -18,37 +18,44 @@ try {
 
   // $buyer->is_debug(); // for write curl.log file
 
+  $correctionId = 1281;
+
   $correction = [
-    'id' => '23423423',
-    'key' => '1234567',
-    'correctionType' => 0,
-    'type' => 1,
-    'description' => 'cashier error',
-    'causeDocumentDate' => new \DateTime(),
-    'causeDocumentNumber' => '56ce',
-    'totalSum' => 567.9,
-    'cashSum' => 567,
-    'eCashSum' => 0.9,
-    'prepaymentSum' => 0,
-    'postpaymentSum' => 0,
-    'otherPaymentTypeSum' => 0,
-    'tax1Sum' => 0,
-    'tax2Sum' => 0,
-    'tax3Sum' => 0,
-    'tax4Sum' => 0,
-    'tax5Sum' => 0,
-    'tax6Sum' => 0,
-    'taxationSystem' => 2,
+    "id" => $correctionId,
+    "description" => "Описание",
+    "group" => "Main",
+    "key" => "999",
+    "ignoreItemCodeCheck" => true,
+    "type" => 1,
+    "taxationSystem" => 0,
+    "correctionType" => 0,
+    "causeDocumentDate" => new \DateTime(),
+    "causeDocumentNumber" => "1",
+    "totalSum" => "100.00",
+    "cashSum" => 0,
+    "eCashSum" => "100",
+    "prepaymentSum" => 0,
+    "postpaymentSum" => 0,
+    "otherPaymentTypeSum" => 0,
+    "tax1Sum" => 0,
+    "tax2Sum" => 0,
+    "tax3Sum" => 0,
+    "tax4Sum" => 0,
+    "tax5Sum" => 0,
+    "tax6Sum" => 0,
+    "checkClose" => false
   ];
 
-  $correctionVending = [
+/*   $correctionVending = [
     'automatNumber' => '21321321123',
     'settlementAddress' => 'Address',
     'settlementPlace' => 'Place',
-  ];
+  ]; */
 
-  $buyer->create_correction($correction)->add_vending_to_correction($correctionVending); // Create correction
-
+  $buyer
+  ->create_correction($correction)
+/*   ->add_vending_to_correction($correctionVending); // Create correction */
+  ;
   $result = $buyer->post_correction(); // Send correction
   var_dump($result); // View response
 } catch (Exception $ex) {
@@ -57,7 +64,7 @@ try {
 
 /** View status of correction **/
 try {
-  $cor_status = $buyer->get_correction_status('23423423');
+  $cor_status = $buyer->get_correction_status($correctionId);
   var_dump($cor_status);
 } catch (Exception $ex) {
   echo 'Ошибка:' . PHP_EOL . $ex->getMessage();
