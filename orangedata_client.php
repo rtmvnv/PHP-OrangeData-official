@@ -945,6 +945,51 @@ class orangedata_client {
     return $this->correction_request;
   }
 
+  public function check($group, $key) {
+    $data = [
+      'inn' => $this->inn,
+      'group' => $group,
+      'key' => $key
+    ];
+    $jsonstring = json_encode($data, JSON_PRESERVE_ZERO_FRACTION);
+    $sign = $this->sign_order_request($jsonstring);
+    $curl = is_numeric($this->api_url) ? $this->prepare_curl($this->edit_url($this->api_url, true)) : $this->prepare_curl($this->api_url . '/api/v2/check/');
+    $headers = [
+      "Content-Length: " . strlen($jsonstring),
+      "Content-Type: application/json; charset=utf-8",
+      "X-Signature: " . $sign
+    ];
+
+    curl_setopt_array($curl, [
+      CURLOPT_POST => true,
+      CURLOPT_HTTPHEADER => $headers,
+      CURLOPT_POSTFIELDS => $jsonstring
+    ]);
+    $answer = curl_exec($curl);
+    if (curl_errno($curl)) {
+      throw new Exception('Curl error: '
+        . curl_errno($curl)
+        . ' (' . curl_strerror(curl_errno($curl)) . ') '
+        . curl_error($curl)
+      );
+    }
+    $info = curl_getinfo($curl);
+    switch ($info['http_code']) {
+      case '200':
+        return true;
+        break;
+      case '400':
+      case '401':
+          return 'Check private_key.pem or client.crt file.'
+          . PHP_EOL . 'HTTP code ' . $info['http_code']
+          . PHP_EOL . $answer;
+        break;
+      default:
+        return 'Server returned HTTP code ' . $info['http_code'];
+        break;
+    }
+  }
+
     /**
      *  Создание чека-коррекции для ФФД1.2
      *  @param array $params
